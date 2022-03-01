@@ -25,9 +25,20 @@ jobs:
       - run:
           name: install-npm
           command: npm install
+      - run:
+          name: test-run
+          command: npm run test
       - save_cache:
           key: dependency-cache-{{ checksum "package-lock.json" }}
-          path:
+          paths:
             - ./node_modules
+  deploy:
+    docker:
+      - image: circleci/node:10.16.3
+    steps:
+      - run:
+          name: deploy-application
+          command: ssh -o StrictHostKeyChecking=no $EC2_USERNAME@EC2_PUBLIC_DNS "rm -rf ExampleApplication/;git clone https://github.com/glenmoe85/ExampleApplication.git; source ExampleApplication/deploy.sh"
+
 
 
